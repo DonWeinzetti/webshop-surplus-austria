@@ -1,14 +1,369 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
   provider = "postgresql"
+  /* url       = env("DATABASE_URL")   // Runtime (App)
+  * directUrl = env("DIRECT_URL")     // Migrate/Introspect/Studio (direkt)
+  */
+}
+
+/**
+ * Enums
+ */
+enum PartCondition {
+  NEW
+  USED
+  NOS
+  UNKNOWN
+}
+
+enum PartAuthenticity {
+  ORIGINAL
+  REPRO
+  UNKNOWN
+}
+
+enum FitmentConfidence {
+  CONFIRMED
+  PROBABLE
+  UNKNOWN
+}
+
+enum StockStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+}
+
+enum HotspotShapeType {
+  POLYGON
+  RECT
+  CIRCLE
+}
+
+enum HotspotLinkType {
+  PART
+  SET
+  CATEGORY
+  FILTER
+}
+
+/**
+ * Core reference entities
+ */
+model Manufacturer {
+  id      String  @id @default(cuid())
+  name    String
+  code    String? @unique
+  country String?
+  notes   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants FirearmVariant[]
+  fitments PartFitment[]
+
+  @@index([name])
+}
+
+model FirearmModel {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants FirearmVariant[]
+  fitments PartFitment[]
+  diagrams FirearmDiagram[]
+
+  @@index([name])
+}
+
+model FirearmVariant {
+  id             String       @id @default(cuid())
+  firearmModelId String
+  firearmModel   FirearmModel @relation(fields: [firearmModelId], references: [id], onDelete: Cascade)
+
+  name     String
+  slug     String @unique
+  yearFrom Int?
+  yearTo   Int?
+
+  manufacturerId String?
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+
+  description String?
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fitments PartFitment[]
+  diagrams FirearmDiagram[]
+
+  @@index([firearmModelId])
+  @@index([manufacturerId])
+  @@index([name])
+}
+
+/**
+ * Categories (Baugruppen)
+ */
+model PartCategory {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  parentId String?
+  parent   PartCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children PartCategory[] @relation("CategoryTree")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parts    Part[]
+  hotspots DiagramHotspot[]
+
+  @@index([name])
+  @@index([parentId])
+}
+
+/**
+ * Parts (sprachneutraler Kern)
+ * Mehrsprachiger Content in PartTranslation
+ * Bilder in PartImage
+ */
+model Part {
+  id String @id @default(cuid())
+
+  sku  String? @unique
+  slug String  @unique
+
+  categoryId String?
+  category   PartCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  condition    PartCondition    @default(UNKNOWN)
+  authenticity PartAuthenticity @default(UNKNOWN)
+
+  stockStatus StockStatus @default(OUT_OF_STOCK)
+  quantity    Int         @default(0)
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations PartTranslation[]
+  images       PartImage[]
+  fitments     PartFitment[]
+  setItems     PartSetItem[]
+  hotspots     DiagramHotspot[]  @relation("HotspotPart")
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model PartTranslation {
+  id     String @id @default(cuid())
+  partId String
+  part   Part   @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  locale      String
+  title       String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([partId, locale])
+  @@index([locale])
+}
+
+model PartImage {
+  id     String @id @default(cuid())
+  partId String
+  part   Part   @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  originalPath  String
+  thumbnailPath String?
+  altText       String?
+  sortOrder     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([partId])
+}
+
+/**
+ * Fitment/Compatibility
+ */
+model PartFitment {
+  id String @id @default(cuid())
+
+  partId String
+  part   Part   @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  firearmModelId String
+  firearmModel   FirearmModel @relation(fields: [firearmModelId], references: [id], onDelete: Cascade)
+
+  firearmVariantId String?
+  firearmVariant   FirearmVariant? @relation(fields: [firearmVariantId], references: [id], onDelete: SetNull)
+
+  manufacturerId String?
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+
+  confidence       FitmentConfidence @default(UNKNOWN)
+  notes            String?
+  source           String?
+  incompatibleWith String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([partId, firearmModelId, firearmVariantId, manufacturerId])
+  @@index([partId])
+  @@index([firearmModelId])
+  @@index([firearmVariantId])
+  @@index([manufacturerId])
+}
+
+/**
+ * Sets/Bundles (sprachneutraler Kern)
+ * Mehrsprachiger Content in PartSetTranslation
+ * Bilder in PartSetImage
+ */
+model PartSet {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  stockStatus StockStatus @default(OUT_OF_STOCK)
+
+  priceCents Int?
+  currency   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations PartSetTranslation[]
+  images       PartSetImage[]
+  items        PartSetItem[]
+  hotspots     DiagramHotspot[]     @relation("HotspotSet")
+
+  @@index([slug])
+}
+
+model PartSetTranslation {
+  id        String  @id @default(cuid())
+  partSetId String
+  partSet   PartSet @relation(fields: [partSetId], references: [id], onDelete: Cascade)
+
+  locale      String
+  title       String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([partSetId, locale])
+  @@index([locale])
+}
+
+model PartSetImage {
+  id        String  @id @default(cuid())
+  partSetId String
+  partSet   PartSet @relation(fields: [partSetId], references: [id], onDelete: Cascade)
+
+  originalPath  String
+  thumbnailPath String?
+  altText       String?
+  sortOrder     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([partSetId])
+}
+
+model PartSetItem {
+  id String @id @default(cuid())
+
+  partSetId String
+  partSet   PartSet @relation(fields: [partSetId], references: [id], onDelete: Cascade)
+
+  partId String
+  part   Part   @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  quantity Int     @default(1)
+  notes    String?
+
+  @@unique([partSetId, partId])
+  @@index([partSetId])
+  @@index([partId])
+}
+
+/**
+ * Diagrams / Image maps
+ */
+model FirearmDiagram {
+  id String @id @default(cuid())
+
+  firearmModelId String
+  firearmModel   FirearmModel @relation(fields: [firearmModelId], references: [id], onDelete: Cascade)
+
+  firearmVariantId String?
+  firearmVariant   FirearmVariant? @relation(fields: [firearmVariantId], references: [id], onDelete: SetNull)
+
+  title       String
+  storagePath String
+  widthPx     Int?
+  heightPx    Int?
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hotspots DiagramHotspot[]
+
+  @@index([firearmModelId])
+  @@index([firearmVariantId])
+}
+
+model DiagramHotspot {
+  id String @id @default(cuid())
+
+  diagramId String
+  diagram   FirearmDiagram @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+
+  label     String
+  shapeType HotspotShapeType @default(POLYGON)
+
+  pointsJson Json
+  linkType   HotspotLinkType @default(FILTER)
+
+  partId String?
+  part   Part?   @relation("HotspotPart", fields: [partId], references: [id], onDelete: SetNull)
+
+  partSetId String?
+  partSet   PartSet? @relation("HotspotSet", fields: [partSetId], references: [id], onDelete: SetNull)
+
+  categoryId String?
+  category   PartCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  filterJson Json?
+  sortOrder  Int   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([diagramId])
+  @@index([partId])
+  @@index([partSetId])
+  @@index([categoryId])
 }
