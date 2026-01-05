@@ -26,6 +26,11 @@ export default function AdminHomePage() {
           <div className="text-sm text-gray-600">Anlegen, ändern, löschen</div>
         </Link>
 
+        <Link className="rounded-2xl border p-4 hover:bg-gray-50" href="/admin/variants">
+          <div className="font-medium">Varianten</div>
+          <div className="text-sm text-gray-600">FirearmVariant</div>
+        </Link>
+
         <Link className="rounded-2xl border p-4 hover:bg-gray-50" href="/admin/parts">
           <div className="font-medium">Parts</div>
           <div className="text-sm text-gray-600">DE/EN, Lagerstand, Bilder</div>
