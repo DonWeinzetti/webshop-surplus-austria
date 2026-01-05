@@ -169,7 +169,7 @@ export default async function CategoryEditPage({ params }: PageProps) {
         <p className="text-xs text-red-700 mt-1">
           Achtung: Parts verlieren dann die Kategorie (categoryId wird null), Children verlieren den Parent (parentId wird null).
         </p>
-        <button className="mt-3 rounded-xl border border-red-300 bg-white px-4 py-2 text-sm hover:bg-red-100">
+        <button className="admin-btn admin-btn-danger">
           Kategorie löschen
         </button>
       </form>

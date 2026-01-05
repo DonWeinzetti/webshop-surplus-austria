@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+ --background: #ffffff;
+  --foreground: #111827; /* gray-900 */
+  --muted: #6b7280;      /* gray-500 */
 }
 
 @theme inline {
@@ -23,4 +24,161 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+/* -------------------------
+   Admin Theme (scoped)
+   wirkt nur innerhalb .admin-theme
+-------------------------- */
+
+ /* =========================
+   Global Theme Variables
+   (Default: light)
+========================= */
+:root {
+  --background: #ffffff;
+  --foreground: #111827; /* gray-900 */
+  --muted: #6b7280;      /* gray-500 */
+}
+
+/* =========================
+   Parts Theme (Shop)
+/parts/*
+========================= */
+.parts-theme {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #9ca3af;
+
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* =========================
+   Admin Theme (scoped)
+/admin/*
+========================= */
+@layer base {
+  .admin-theme {
+    --admin-bg: #0b0f19;
+    --admin-surface: #111827;
+    --admin-surface-2: #0f172a;
+    --admin-border: rgba(255, 255, 255, 0.10);
+    --admin-text: #e5e7eb;
+    --admin-muted: #9ca3af;
+
+    background: var(--admin-bg);
+    color: var(--admin-text);
+  }
+
+  .admin-theme a {
+    color: var(--admin-text);
+  }
+
+  .admin-theme h1,
+  .admin-theme h2,
+  .admin-theme h3 {
+    color: var(--admin-text);
+  }
+
+  /* macht "text-gray-*" im Admin lesbar */
+  .admin-theme .text-gray-400,
+  .admin-theme .text-gray-500,
+  .admin-theme .text-gray-600 {
+    color: var(--admin-muted) !important;
+  }
+}
+
+@layer components {
+  .admin-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 1rem;
+  }
+
+  .admin-input,
+  .admin-select,
+  .admin-textarea {
+    background: var(--admin-surface-2);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    outline: none;
+  }
+
+  .admin-input::placeholder,
+  .admin-textarea::placeholder {
+    color: var(--admin-muted);
+  }
+
+  .admin-input:focus,
+  .admin-select:focus,
+  .admin-textarea:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .admin-btn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  .admin-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .admin-btn-danger {
+    border-color: rgba(248, 113, 113, 0.35);
+    color: rgb(248, 113, 113);
+  }
+
+  .admin-btn-danger:hover {
+    background: rgba(248, 113, 113, 0.08);
+  }
+
+  .admin-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface);
+  }
+
+  .admin-table thead th {
+    text-align: left;
+    padding: 0.75rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .admin-table tbody td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+  }
+
+  .admin-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--admin-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--admin-text);
+    border-radius: 999px;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+  }
 }

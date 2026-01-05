@@ -83,7 +83,7 @@ export default async function AdminPartEditPage({ params }: PageProps) {
       <form action={updatePart} className="space-y-4 max-w-5xl">
         <input type="hidden" name="id" value={part.id} />
 
-        <div className="rounded-2xl border p-4 space-y-3 bg-white">
+        <div className="rounded-2xl border p-4 space-y-3 bg-black">
           <div className="grid gap-3 md:grid-cols-2">
             <div className="space-y-1">
               <div className="text-sm font-medium">Slug</div>
@@ -150,7 +150,7 @@ export default async function AdminPartEditPage({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="rounded-2xl border p-4 space-y-3 bg-white">
+        <div className="rounded-2xl border p-4 space-y-3 bg-black">
           <div className="text-sm font-semibold">Übersetzungen</div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -180,7 +180,7 @@ export default async function AdminPartEditPage({ params }: PageProps) {
       </form>
 
       {/* Images */}
-      <div className="rounded-2xl border p-4 bg-white space-y-3 max-w-5xl">
+      <div className="rounded-2xl border p-4 bg-black space-y-3 max-w-5xl">
         <div className="flex items-center justify-between">
           <div className="text-sm font-semibold">Bilder</div>
           <div className="text-xs text-gray-500">Upload → Supabase Storage</div>
@@ -211,7 +211,7 @@ export default async function AdminPartEditPage({ params }: PageProps) {
                 <li key={img.id} className="rounded-2xl border p-3 flex gap-3">
                   <div className="shrink-0">
                     {url ? (
-                      <img src={url} alt={img.altText ?? ""} className="h-24 w-24 rounded-xl border object-contain bg-white" />
+                      <img src={url} alt={img.altText ?? ""} className="h-24 w-24 rounded-xl border object-contain bg-black" />
                     ) : (
                       <div className="h-24 w-24 rounded-xl border bg-gray-50" />
                     )}
