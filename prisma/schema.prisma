@@ -130,8 +130,26 @@ model PartCategory {
   parts    Part[]
   hotspots DiagramHotspot[]
 
+  translations PartCategoryTranslation[]
+
   @@index([name])
   @@index([parentId])
+}
+
+model PartCategoryTranslation {
+  id         String       @id @default(cuid())
+  categoryId String
+  category   PartCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  locale      String
+  title       String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([categoryId, locale])
+  @@index([locale])
 }
 
 /**
