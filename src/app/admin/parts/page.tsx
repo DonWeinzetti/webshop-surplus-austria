@@ -71,7 +71,7 @@ export default async function AdminPartsPage({ searchParams }: PageProps) {
         </Link>
       </header>
 
-      <div className="rounded-2xl border p-4 bg-white space-y-3">
+      <div className="rounded-2xl border p-4 bg-black space-y-3">
         <form className="flex flex-wrap items-center gap-2">
           <input
             name="q"
@@ -99,7 +99,7 @@ export default async function AdminPartsPage({ searchParams }: PageProps) {
 
       <div className="rounded-2xl border overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-800">
             <tr>
               <th className="p-3 text-left">Teil</th>
               <th className="p-3 text-left">Kategorie</th>
@@ -133,7 +133,7 @@ export default async function AdminPartsPage({ searchParams }: PageProps) {
 
                   <td className="p-3">
                     {url ? (
-                      <img src={url} alt="" className="h-12 w-12 rounded-lg border object-contain bg-white" />
+                      <img src={url} alt="" className="h-12 w-12 rounded-lg border object-contain bg-black" />
                     ) : (
                       <span className="text-xs text-gray-400">—</span>
                     )}

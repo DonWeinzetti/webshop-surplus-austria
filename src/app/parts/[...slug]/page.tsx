@@ -207,7 +207,7 @@ export default async function PartsPage({ searchParams }: PageProps) {
             const originalUrl = supabasePublicUrl(img?.originalPath);
 
             return (
-              <li key={p.id} className="rounded-2xl border p-4 shadow-sm bg-white">
+              <li key={p.id} className="rounded-2xl border p-4 shadow-sm bg-black">
                 <div className="space-y-2">
                   <div className="text-xs text-gray-500 flex justify-between gap-2">
                     <span>{p.category?.name ?? "Ohne Kategorie"}</span>
@@ -228,7 +228,7 @@ export default async function PartsPage({ searchParams }: PageProps) {
                     <img
                       src={thumbUrl ?? originalUrl ?? ""}
                       alt={img?.altText ?? t?.title ?? "Bild"}
-                      className="h-40 w-40 object-contain rounded-xl border bg-white"
+                      className="h-40 w-40 object-contain rounded-xl border bg-black"
                     />
                   ) : (
                     <div className="text-xs text-gray-400">Kein Bild</div>

@@ -23,7 +23,7 @@ export default async function AdminPartsNewPage() {
       </header>
 
       <form action={createPart} className="space-y-4 max-w-4xl">
-        <div className="rounded-2xl border p-4 space-y-3 bg-white">
+        <div className="rounded-2xl border p-4 space-y-3 bg-gray-800">
           <div className="grid gap-3 md:grid-cols-2">
             <div className="space-y-1">
               <div className="text-sm font-medium">Slug (unique)</div>
@@ -91,7 +91,7 @@ export default async function AdminPartsNewPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border p-4 space-y-3 bg-white">
+        <div className="rounded-2xl border p-4 space-y-3 bg-gray-800">
           <div className="text-sm font-semibold">Übersetzungen</div>
 
           <div className="grid gap-4 md:grid-cols-2">
