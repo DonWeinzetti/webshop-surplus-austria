@@ -21,6 +21,7 @@ function toIntOrNull(v: FormDataEntryValue | null) {
 
 export async function createVariant(formData: FormData) {
   const firearmModelId = String(formData.get("firearmModelId") ?? "").trim();
+
   const manufacturerIdRaw = String(formData.get("manufacturerId") ?? "").trim();
   const manufacturerId = manufacturerIdRaw ? manufacturerIdRaw : null;
 
@@ -28,6 +29,7 @@ export async function createVariant(formData: FormData) {
   const slug = normSlug(String(formData.get("slug") ?? ""));
   const yearFrom = toIntOrNull(formData.get("yearFrom"));
   const yearTo = toIntOrNull(formData.get("yearTo"));
+  const description = String(formData.get("description") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
 
   if (!firearmModelId) throw new Error("Model fehlt");
@@ -37,13 +39,14 @@ export async function createVariant(formData: FormData) {
   const created = await prisma.firearmVariant.create({
     data: {
       firearmModelId,
-      manufacturerId, // falls Feld im Schema existiert
+      manufacturerId,
       name,
       slug,
       yearFrom,
       yearTo,
+      description,
       notes,
-    } as any,
+    },
     select: { id: true },
   });
 
@@ -54,6 +57,7 @@ export async function createVariant(formData: FormData) {
 export async function updateVariant(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   const firearmModelId = String(formData.get("firearmModelId") ?? "").trim();
+
   const manufacturerIdRaw = String(formData.get("manufacturerId") ?? "").trim();
   const manufacturerId = manufacturerIdRaw ? manufacturerIdRaw : null;
 
@@ -61,6 +65,7 @@ export async function updateVariant(formData: FormData) {
   const slug = normSlug(String(formData.get("slug") ?? ""));
   const yearFrom = toIntOrNull(formData.get("yearFrom"));
   const yearTo = toIntOrNull(formData.get("yearTo"));
+  const description = String(formData.get("description") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
 
   if (!id) throw new Error("ID fehlt");
@@ -77,8 +82,9 @@ export async function updateVariant(formData: FormData) {
       slug,
       yearFrom,
       yearTo,
+      description,
       notes,
-    } as any,
+    },
   });
 
   revalidatePath("/admin/variants");
