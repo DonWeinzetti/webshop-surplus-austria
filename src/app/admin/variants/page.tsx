@@ -3,8 +3,20 @@ import { prisma } from "@/db/prisma";
 
 export const dynamic = "force-dynamic";
 
+type VariantRow = {
+  id: string;
+  name: string;
+  slug: string;
+  yearFrom: number | null;
+  yearTo: number | null;
+  updatedAt: Date;
+  firearmModel: { name: string; slug: string };
+  manufacturer: { name: string; code: string | null } | null;
+  _count: { fitments: number };
+};
+
 export default async function VariantsPage() {
-  const items = await prisma.firearmVariant.findMany({
+  const items = (await prisma.firearmVariant.findMany({
     orderBy: [{ updatedAt: "desc" }],
     take: 200,
     select: {
@@ -13,12 +25,12 @@ export default async function VariantsPage() {
       slug: true,
       yearFrom: true,
       yearTo: true,
-      firearmModel: { select: { name: true, slug: true } },
-      manufacturer: { select: { name: true, code: true } }, // falls relation existiert
-      _count: { select: { fitments: true } },
       updatedAt: true,
-    } as any,
-  });
+      firearmModel: { select: { name: true, slug: true } },
+      manufacturer: { select: { name: true, code: true } }, // Manufacturer hat KEIN slug
+      _count: { select: { fitments: true } },
+    },
+  })) as VariantRow[];
 
   return (
     <div className="p-6 space-y-4">
@@ -28,7 +40,10 @@ export default async function VariantsPage() {
           <p className="text-sm text-gray-600">FirearmVariant – CRUD</p>
         </div>
 
-        <Link className="rounded-xl border px-4 py-2 text-sm hover:bg-gray-50" href="/admin/variants/new">
+        <Link
+          className="rounded-xl border px-4 py-2 text-sm hover:bg-gray-50"
+          href="/admin/variants/new"
+        >
           + Neu
         </Link>
       </div>
@@ -45,6 +60,7 @@ export default async function VariantsPage() {
               <th className="p-3">Aktion</th>
             </tr>
           </thead>
+
           <tbody>
             {items.map((v) => (
               <tr key={v.id} className="border-t">
@@ -52,18 +68,25 @@ export default async function VariantsPage() {
                   <div className="font-medium">{v.name}</div>
                   <div className="text-xs text-gray-500 font-mono">{v.slug}</div>
                 </td>
+
                 <td className="p-3">
-                  <div className="text-sm">{v.firearmModel?.name}</div>
-                  <div className="text-xs text-gray-500 font-mono">{v.firearmModel?.slug}</div>
+                  <div className="text-sm">{v.firearmModel.name}</div>
+                  <div className="text-xs text-gray-500 font-mono">{v.firearmModel.slug}</div>
                 </td>
+
                 <td className="p-3 text-xs">
                   {v.manufacturer?.name ?? "—"}
-                  {v.manufacturer?.code ? <span className="text-gray-500"> · {v.manufacturer.code}</span> : null}
+                  {v.manufacturer?.code ? (
+                    <span className="text-gray-500"> · {v.manufacturer.code}</span>
+                  ) : null}
                 </td>
+
                 <td className="p-3 text-xs">
                   {(v.yearFrom ?? "—") + "–" + (v.yearTo ?? "—")}
                 </td>
-                <td className="p-3">{(v as any)._count?.fitments ?? 0}</td>
+
+                <td className="p-3">{v._count.fitments}</td>
+
                 <td className="p-3">
                   <Link className="underline underline-offset-2" href={`/admin/variants/${v.id}`}>
                     Bearbeiten →

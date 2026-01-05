@@ -56,12 +56,22 @@ export default async function VariantNewPage() {
           <div className="grid gap-3 md:grid-cols-2">
             <label className="block space-y-1">
               <div className="text-xs text-gray-600">Name</div>
-              <input name="name" className="w-full border rounded-xl px-3 py-2 text-sm" placeholder="K98k (Standard)" required />
+              <input
+                name="name"
+                className="w-full border rounded-xl px-3 py-2 text-sm"
+                placeholder="K98k (Standard)"
+                required
+              />
             </label>
 
             <label className="block space-y-1">
               <div className="text-xs text-gray-600">Slug</div>
-              <input name="slug" className="w-full border rounded-xl px-3 py-2 text-sm" placeholder="k98k-standard" required />
+              <input
+                name="slug"
+                className="w-full border rounded-xl px-3 py-2 text-sm"
+                placeholder="k98k-standard"
+                required
+              />
             </label>
           </div>
 
@@ -78,6 +88,11 @@ export default async function VariantNewPage() {
           </div>
 
           <label className="block space-y-1">
+            <div className="text-xs text-gray-600">Beschreibung (optional)</div>
+            <textarea name="description" className="w-full border rounded-xl px-3 py-2 text-sm" rows={4} />
+          </label>
+
+          <label className="block space-y-1">
             <div className="text-xs text-gray-600">Notes (optional)</div>
             <textarea name="notes" className="w-full border rounded-xl px-3 py-2 text-sm" rows={4} />
           </label>
@@ -87,10 +102,6 @@ export default async function VariantNewPage() {
           Anlegen
         </button>
       </form>
-
-      <div className="text-xs text-gray-500">
-        Hinweis: Falls dein Schema kein manufacturerId bei FirearmVariant hat, sag Bescheid – dann entfernen wir das Feld in 1 Minute.
-      </div>
     </div>
   );
 }
